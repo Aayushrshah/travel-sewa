@@ -2745,5 +2745,5 @@ textarea:focus {
 }
 
 .menu-ico.tickets {
-  background: rgba(27, 79, 156, 0.12);
+  background: var(--brand-soft);
 }

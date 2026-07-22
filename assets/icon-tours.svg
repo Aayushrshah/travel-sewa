@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Tours">
+  <rect width="96" height="96" rx="22" fill="#EAF7FB"/>
+  <path d="M18 68L38 34l14 18 10-12 16 28H18z" fill="#0984A4"/>
+  <path d="M48 52l10-12 16 28H58z" fill="#00B4D8"/>
+  <circle cx="68" cy="28" r="8" fill="#F4B400"/>
+  <rect x="28" y="58" width="14" height="10" rx="2" fill="#FFFFFF" opacity=".85"/>
+</svg>

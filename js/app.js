@@ -71,6 +71,7 @@ const state = {
   selectedSeats: [],
   passenger: null,
   takenSeats: [],
+  vehicleMode: "bus",
   dashBusId: null,
   editingStaffId: null,
   editingBusId: null,
@@ -249,8 +250,11 @@ async function applyRoleUI() {
   if (bookSub) {
     bookSub.textContent = guest
       ? "Search routes and seats without an account. Sign in when you confirm."
-      : "Search routes, pick seats, and save full passenger details.";
+      : state.vehicleMode === "micro-ev"
+        ? "Search Micro EV shuttles, pick seats, and confirm."
+        : "Search routes, pick seats, and save full passenger details.";
   }
+  refreshHomeGreeting();
   const guestBanner = $("#guest-banner");
   if (guestBanner) guestBanner.hidden = !guest;
 
@@ -347,6 +351,7 @@ async function finishAuthAndResume(welcomeMsg) {
     $$(".nav-btn").forEach((b) => b.classList.toggle("active", b.dataset.view === "book"));
     $$(".view").forEach((v) => v.classList.remove("active"));
     $("#view-book").classList.add("active");
+    openBookFlow(state.vehicleMode || "bus", { announce: false });
     $("#trip-results").hidden = true;
     $("#booking-wizard").hidden = false;
     if (state.passenger) {
@@ -876,6 +881,109 @@ async function refreshCityOptions() {
   fillCities([...set].sort());
 }
 
+/* ---------- Home hub ---------- */
+
+function refreshHomeGreeting() {
+  const el = $("#home-greeting");
+  if (!el) return;
+  const adminUser = getSavedAdminUser();
+  const role = getCurrentRole();
+  let name = "traveler";
+  if (role === ROLES.admin && adminUser?.username) name = adminUser.username;
+  else if (state.currentStaff?.fullName) name = state.currentStaff.fullName.split(" ")[0];
+  else if (role === ROLES.guest) name = "Guest";
+  el.textContent = `Namaste, ${name}`;
+}
+
+function showHomeHub() {
+  const hub = $("#home-hub");
+  const flow = $("#book-flow");
+  if (hub) hub.hidden = false;
+  if (flow) flow.hidden = true;
+  state.vehicleMode = "bus";
+}
+
+function openBookFlow(mode = "bus", { announce = true } = {}) {
+  state.vehicleMode = mode === "micro-ev" ? "micro-ev" : "bus";
+  const hub = $("#home-hub");
+  const flow = $("#book-flow");
+  if (hub) hub.hidden = true;
+  if (flow) {
+    flow.hidden = false;
+    flow.dataset.vehicle = state.vehicleMode;
+  }
+  const title = $("#book-flow-title");
+  const findBtn = $("#btn-find-trips");
+  if (state.vehicleMode === "micro-ev") {
+    if (title) title.textContent = "Book a Micro EV";
+    if (findBtn) findBtn.textContent = "Find Micro EV";
+    if (announce) toast("Micro EV booking — search available shuttles");
+  } else {
+    if (title) title.textContent = "Book a bus";
+    if (findBtn) findBtn.textContent = "Find buses";
+  }
+  applyRoleUI();
+  const date = $("#travel-date");
+  if (date && !date.value) date.valueAsDate = new Date(Date.now() + 86400000);
+}
+
+function handleHomeAction(action) {
+  switch (action) {
+    case "buses":
+      openBookFlow("bus");
+      break;
+    case "micro-ev":
+      openBookFlow("micro-ev");
+      break;
+    case "tickets":
+      if (!isSignedIn()) return promptSignIn("Sign in to view your tickets");
+      goToView("tickets");
+      break;
+    case "find":
+      if (!isSignedIn()) return promptSignIn("Sign in to find passenger tickets");
+      goToView("tickets");
+      setTimeout(() => {
+        setPassengerHistoryMode(true);
+        renderPassengerHistory();
+        $("#passenger-history-name")?.focus();
+      }, 0);
+      break;
+    case "tours":
+      toast("Tours — coming soon");
+      break;
+    case "hotels":
+      toast("Hotels — coming soon");
+      break;
+    case "rentals":
+      toast("Rentals — coming soon");
+      break;
+    case "flights":
+      toast("Flights — coming soon");
+      break;
+    default:
+      break;
+  }
+}
+
+document.querySelectorAll("[data-home-action]").forEach((btn) => {
+  btn.addEventListener("click", () => handleHomeAction(btn.dataset.homeAction));
+});
+
+$("#btn-home-back")?.addEventListener("click", () => {
+  resetBookView();
+  showHomeHub();
+});
+
+$$(".promo-chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    $$(".promo-chip").forEach((c) => c.classList.toggle("active", c === chip));
+    const filter = chip.dataset.promoFilter || "all";
+    $$("#promo-scroller .promo-card").forEach((card) => {
+      card.hidden = filter !== "all" && card.dataset.promoType !== filter;
+    });
+  });
+});
+
 /* ---------- Book flow ---------- */
 
 function resetBookView() {
@@ -895,10 +1003,12 @@ function resetBookView() {
   state.takenSeats = [];
   state.depositPaymentDone = false;
   clearDepositPaymentDone();
+  showHomeHub();
 }
 
 $("#travel-date").valueAsDate = new Date(Date.now() + 86400000);
 resetBookView();
+refreshHomeGreeting();
 
 $("#search-form").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -918,7 +1028,8 @@ $("#search-form").addEventListener("submit", async (e) => {
   box.hidden = false;
 
   if (!matches.length) {
-    box.innerHTML = `<div class="empty">No buses on this route yet. Admin can add one under Fleet.</div>`;
+    const emptyLabel = state.vehicleMode === "micro-ev" ? "Micro EV shuttles" : "buses";
+    box.innerHTML = `<div class="empty">No ${emptyLabel} on this route yet. Admin can add one under Fleet.</div>`;
     return;
   }
 
@@ -984,6 +1095,10 @@ async function startBooking(route, bus, travelDate) {
 
   $("#trip-results").hidden = true;
   $("#booking-wizard").hidden = false;
+  const hub = $("#home-hub");
+  const flow = $("#book-flow");
+  if (hub) hub.hidden = true;
+  if (flow) flow.hidden = false;
   $("#seat-bus-title").textContent = state.selectedRoute.displayName || state.selectedRoute.busNumber;
   $("#seat-bus-meta").textContent = `${state.selectedRoute.busType} · ${state.selectedRoute.departureTime} – ${state.selectedRoute.arrivalTime}`;
   setWizardStep(1);

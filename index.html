@@ -154,7 +154,7 @@
         <span id="role-badge" class="role-badge">User</span>
       </div>
       <nav class="nav">
-        <button type="button" class="nav-btn active" data-view="book">Book</button>
+        <button type="button" class="nav-btn active" data-view="book">Home</button>
         <button type="button" class="nav-btn" data-view="tickets" data-signed-in-only>Tickets</button>
         <button type="button" class="nav-btn" data-view="dashboard" data-signed-in-only>Dashboard</button>
         <button type="button" class="nav-btn" data-view="expenses" data-signed-in-only>Expenses</button>
@@ -170,36 +170,139 @@
     </header>
 
     <main class="main">
-      <!-- Book -->
+      <!-- Home / Book -->
       <section id="view-book" class="view active">
-        <div class="view-head">
-          <h2>Book a trip</h2>
-          <p id="book-sub">Search routes, pick seats, and save full passenger details.</p>
-        </div>
-        <div id="guest-banner" class="guest-banner" hidden>
-          You are browsing as a guest — search buses freely. Sign in when you are ready to confirm.
-          <button type="button" class="btn btn-primary btn-sm" id="btn-guest-signin">Sign in</button>
-        </div>
-
-        <form id="search-form" class="panel search-panel">
-          <div class="field-row">
-            <label>
-              <span>From</span>
-              <select id="from-city" required></select>
-            </label>
-            <label>
-              <span>To</span>
-              <select id="to-city" required></select>
-            </label>
-            <label>
-              <span>Date</span>
-              <input type="date" id="travel-date" required />
-            </label>
-            <button type="submit" class="btn btn-primary">Find buses</button>
+        <div id="home-hub" class="home-hub">
+          <div class="home-greeting">
+            <div>
+              <p class="home-hello" id="home-greeting">Namaste</p>
+              <p class="home-brand-line">Travel Sewa</p>
+            </div>
+            <img src="assets/logo.svg" alt="" width="44" height="44" class="home-avatar" />
           </div>
-        </form>
 
-        <div id="trip-results" class="trip-results" hidden></div>
+          <div class="service-grid" role="navigation" aria-label="Services">
+            <button type="button" class="service-tile" data-home-action="buses">
+              <img src="assets/icon-bus.svg" alt="" width="52" height="52" />
+              <span>Buses</span>
+            </button>
+            <button type="button" class="service-tile" data-home-action="micro-ev">
+              <img src="assets/icon-micro-ev.svg" alt="" width="52" height="52" />
+              <span>Micro EV</span>
+            </button>
+            <button type="button" class="service-tile" data-home-action="tickets">
+              <img src="assets/icon-tickets.svg" alt="" width="52" height="52" />
+              <span>My Tickets</span>
+            </button>
+            <button type="button" class="service-tile" data-home-action="find">
+              <img src="assets/icon-find.svg" alt="" width="52" height="52" />
+              <span>Find Tickets</span>
+            </button>
+            <button type="button" class="service-tile" data-home-action="tours">
+              <img src="assets/icon-tours.svg" alt="" width="52" height="52" />
+              <span>Tours</span>
+            </button>
+            <button type="button" class="service-tile" data-home-action="hotels">
+              <img src="assets/icon-hotels.svg" alt="" width="52" height="52" />
+              <span>Hotels</span>
+            </button>
+            <button type="button" class="service-tile" data-home-action="rentals">
+              <img src="assets/icon-rentals.svg" alt="" width="52" height="52" />
+              <span>Rentals</span>
+            </button>
+            <button type="button" class="service-tile" data-home-action="flights">
+              <img src="assets/icon-flights.svg" alt="" width="52" height="52" />
+              <span>Flights</span>
+            </button>
+          </div>
+
+          <div class="home-banner">
+            <div class="home-banner-copy">
+              <p class="home-banner-kicker">Travel Sewa offer</p>
+              <p class="home-banner-title">Get up to <strong>Rs. 500</strong> cashback on bus tickets</p>
+              <p class="home-banner-sub">Book your next trip with Travel Sewa Express</p>
+            </div>
+            <img src="assets/icon-bus.svg" alt="" width="72" height="72" class="home-banner-art" />
+          </div>
+
+          <div class="home-section-head">
+            <h3>Promo Codes</h3>
+            <button type="button" class="btn btn-primary btn-sm home-view-all" data-home-action="buses">View all</button>
+          </div>
+          <div class="promo-filters" role="tablist">
+            <button type="button" class="promo-chip active" data-promo-filter="all">All</button>
+            <button type="button" class="promo-chip" data-promo-filter="bus">Bus</button>
+            <button type="button" class="promo-chip" data-promo-filter="ev">Micro EV</button>
+            <button type="button" class="promo-chip" data-promo-filter="hotel">Hotel</button>
+          </div>
+          <div class="promo-scroller" id="promo-scroller">
+            <article class="promo-card" data-promo-type="bus">
+              <span class="promo-tag">Bus Tickets</span>
+              <p class="promo-offer">GET UP TO <strong>Rs 50 OFF</strong></p>
+              <div class="promo-code">TRAVEL50</div>
+            </article>
+            <article class="promo-card" data-promo-type="ev">
+              <span class="promo-tag ev">Micro EV</span>
+              <p class="promo-offer">GET UP TO <strong>Rs 25 OFF</strong></p>
+              <div class="promo-code">EVGREEN25</div>
+            </article>
+            <article class="promo-card" data-promo-type="bus">
+              <span class="promo-tag">Bus Tickets</span>
+              <p class="promo-offer">GET UP TO <strong>Rs 100 OFF</strong></p>
+              <div class="promo-code">SEWA100</div>
+            </article>
+          </div>
+
+          <div class="home-section-head">
+            <h3>Flash Sales</h3>
+            <button type="button" class="btn btn-primary btn-sm home-view-all" data-home-action="buses">View all</button>
+          </div>
+          <div class="flash-scroller">
+            <article class="flash-card">
+              <span class="flash-tag">Bus Tickets</span>
+              <p class="flash-offer">Upto <strong>Rs. 500</strong> Cashback</p>
+              <p class="flash-route">KATHMANDU — POKHARA</p>
+            </article>
+            <article class="flash-card flash-ev">
+              <span class="flash-tag">Micro EV</span>
+              <p class="flash-offer">Upto <strong>Rs. 200</strong> Cashback</p>
+              <p class="flash-route">CITY — AIRPORT SHUTTLE</p>
+            </article>
+          </div>
+        </div>
+
+        <div id="book-flow" class="book-flow" hidden>
+          <div class="book-flow-head">
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-home-back">← Home</button>
+            <div>
+              <h2 id="book-flow-title">Book a bus</h2>
+              <p id="book-sub">Search routes, pick seats, and save full passenger details.</p>
+            </div>
+          </div>
+          <div id="guest-banner" class="guest-banner" hidden>
+            You are browsing as a guest — search buses freely. Sign in when you are ready to confirm.
+            <button type="button" class="btn btn-primary btn-sm" id="btn-guest-signin">Sign in</button>
+          </div>
+
+          <form id="search-form" class="panel search-panel">
+            <div class="field-row">
+              <label>
+                <span>From</span>
+                <select id="from-city" required></select>
+              </label>
+              <label>
+                <span>To</span>
+                <select id="to-city" required></select>
+              </label>
+              <label>
+                <span>Date</span>
+                <input type="date" id="travel-date" required />
+              </label>
+              <button type="submit" class="btn btn-primary" id="btn-find-trips">Find buses</button>
+            </div>
+          </form>
+
+          <div id="trip-results" class="trip-results" hidden></div>
 
         <div id="booking-wizard" class="booking-wizard" hidden>
           <div class="wizard-steps">
@@ -322,6 +425,7 @@
               <button type="button" class="btn btn-primary" id="confirm-book">Confirm &amp; save</button>
             </div>
           </div>
+        </div>
         </div>
       </section>
 

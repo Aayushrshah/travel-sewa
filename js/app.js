@@ -284,8 +284,26 @@ async function applyRoleUI() {
 
   const lockBtn = $("#btn-lock");
   if (lockBtn) {
-    lockBtn.textContent = guest ? "Sign in" : "Lock";
-    lockBtn.title = guest ? "Sign in to confirm bookings" : "Lock workspace";
+    lockBtn.textContent = guest ? "Sign in" : "Logout";
+    lockBtn.title = guest ? "Sign in to confirm bookings" : "Logout";
+  }
+
+  const homeLoginCta = $("#home-login-cta");
+  if (homeLoginCta) homeLoginCta.hidden = !guest;
+
+  const profileName = $("#profile-name");
+  const profileEmail = $("#profile-email");
+  if (profileName) {
+    if (admin && adminUser) profileName.textContent = adminUser.username || "Admin";
+    else if (state.currentStaff) profileName.textContent = state.currentStaff.fullName;
+    else if (guest) profileName.textContent = "Guest";
+    else profileName.textContent = "Traveler";
+  }
+  if (profileEmail) {
+    if (admin && adminUser) profileEmail.textContent = adminUser.email || "";
+    else if (state.currentStaff)
+      profileEmail.textContent = state.currentStaff.phone || state.currentStaff.email || "User account";
+    else profileEmail.textContent = guest ? "Browse as guest — login for offers" : "Travel Sewa";
   }
 
   const confirmBtn = $("#confirm-book");
@@ -443,6 +461,23 @@ function setAuthMode(mode) {
     const el = $(`#${id}`);
     if (el) el.hidden = true;
   });
+  const title = $("#welcome-title");
+  const sub = $("#welcome-sub");
+  if (title) {
+    title.textContent =
+      mode === "signup" ? "Create Account" : mode === "forgot" ? "Forgot Password" : "Welcome Back!";
+  }
+  if (sub) {
+    if (mode === "signin") {
+      sub.innerHTML =
+        `Don't have an account? <button type="button" class="link-btn" data-auth-mode="signup" id="btn-welcome-signup">Sign Up</button>`;
+      $("#btn-welcome-signup")?.addEventListener("click", () => setAuthMode("signup"));
+    } else if (mode === "signup") {
+      sub.textContent = "Create your Travel Sewa admin account";
+    } else {
+      sub.textContent = "Reset your password with email";
+    }
+  }
 }
 
 function showAuthError(id, message) {
@@ -689,7 +724,7 @@ $("#btn-otp-back")?.addEventListener("click", () => {
   clearPinDigits();
 });
 
-$("#btn-lock").addEventListener("click", () => {
+function doLogoutOrSignIn() {
   if (isGuest()) {
     promptSignIn("Sign in to confirm your booking");
     return;
@@ -704,11 +739,38 @@ $("#btn-lock").addEventListener("click", () => {
   setAuthRole("admin");
   setAuthMode(hasLocalAdminAccounts() ? "signin" : "signup");
   clearPinDigits();
-});
+}
+
+$("#btn-lock").addEventListener("click", () => doLogoutOrSignIn());
+$("#btn-profile-logout")?.addEventListener("click", () => doLogoutOrSignIn());
 
 $("#btn-guest-mode")?.addEventListener("click", () => enterAsGuest());
 $("#btn-guest-signin")?.addEventListener("click", () => {
   promptSignIn("Sign in to confirm your booking");
+});
+$("#btn-home-login")?.addEventListener("click", () => promptSignIn("Login to get special offers"));
+$("#btn-facebook-signin")?.addEventListener("click", () => toast("Facebook login — coming soon"));
+$("#btn-welcome-signup")?.addEventListener("click", () => setAuthMode("signup"));
+document.querySelectorAll("[data-auth-mode]:not(.auth-mode-tab)").forEach((btn) => {
+  btn.addEventListener("click", () => setAuthMode(btn.dataset.authMode));
+});
+$$("[data-toggle-password]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const input = document.getElementById(btn.dataset.togglePassword);
+    if (!input) return;
+    input.type = input.type === "password" ? "text" : "password";
+  });
+});
+$("#btn-be-agent")?.addEventListener("click", () => toast("Agent onboarding — coming soon"));
+$("#btn-sos")?.addEventListener("click", () => toast("Emergency SOS — call your nearest counter"));
+$("#btn-refer")?.addEventListener("click", () => toast("Refer & Earn — coming soon"));
+$("#btn-rate-us")?.addEventListener("click", () => toast("Thanks for supporting Travel Sewa"));
+$("#btn-feedback")?.addEventListener("click", () => {
+  window.location.href = "mailto:hello@travelsewa.com?subject=Travel%20Sewa%20Feedback";
+});
+$("#btn-blogs-soon")?.addEventListener("click", () => toast("Blogs — coming soon"));
+$$("[data-info]").forEach((btn) => {
+  btn.addEventListener("click", () => toast(`${btn.textContent.replace("›", "").trim()} — coming soon`));
 });
 
 /* ---------- Navigation ---------- */
@@ -888,10 +950,11 @@ function refreshHomeGreeting() {
   if (!el) return;
   const adminUser = getSavedAdminUser();
   const role = getCurrentRole();
-  let name = "traveler";
+  let name = "Guest";
   if (role === ROLES.admin && adminUser?.username) name = adminUser.username;
   else if (state.currentStaff?.fullName) name = state.currentStaff.fullName.split(" ")[0];
   else if (role === ROLES.guest) name = "Guest";
+  else name = "traveler";
   el.textContent = `Namaste, ${name}`;
 }
 
@@ -947,6 +1010,10 @@ function handleHomeAction(action) {
         renderPassengerHistory();
         $("#passenger-history-name")?.focus();
       }, 0);
+      break;
+    case "profile":
+      if (!isSignedIn()) return promptSignIn("Sign in to open your profile");
+      goToView("settings");
       break;
     case "tours":
       toast("Tours — coming soon");

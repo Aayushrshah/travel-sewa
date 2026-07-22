@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Hotels">
-  <rect width="96" height="96" rx="22" fill="#EEF3FB"/>
-  <rect x="28" y="26" width="40" height="48" rx="4" fill="#1B4F9C"/>
-  <rect x="34" y="34" width="10" height="8" rx="1.5" fill="#D6E4F7"/>
-  <rect x="52" y="34" width="10" height="8" rx="1.5" fill="#D6E4F7"/>
-  <rect x="34" y="48" width="10" height="8" rx="1.5" fill="#D6E4F7"/>
-  <rect x="52" y="48" width="10" height="8" rx="1.5" fill="#D6E4F7"/>
+  <rect width="96" height="96" rx="22" fill="#FDECEC"/>
+  <rect x="28" y="26" width="40" height="48" rx="4" fill="#C8102E"/>
+  <rect x="34" y="34" width="10" height="8" rx="1.5" fill="#FAD1D8"/>
+  <rect x="52" y="34" width="10" height="8" rx="1.5" fill="#FAD1D8"/>
+  <rect x="34" y="48" width="10" height="8" rx="1.5" fill="#FAD1D8"/>
+  <rect x="52" y="48" width="10" height="8" rx="1.5" fill="#FAD1D8"/>
   <rect x="42" y="60" width="12" height="14" rx="1.5" fill="#FFFFFF"/>
 </svg>

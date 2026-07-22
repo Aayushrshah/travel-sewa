@@ -1,0 +1,12 @@
+{
+  "name": "travel-sewa",
+  "version": "1.0.0",
+  "description": "Travel Sewa — bus ticketing web app",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve . -p 5173",
+    "dev": "npx --yes serve . -p 5173",
+    "serve:ps": "powershell -ExecutionPolicy Bypass -File ./serve.ps1",
+    "deploy": "firebase deploy --only hosting"
+  }
+}
